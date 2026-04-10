@@ -1,0 +1,14 @@
+package:
+  name: i2c
+  authors:
+    - "Your Name <your.email@domain.com>"
+
+dependencies:
+  common_cells: {path: "../common_cells"}
+  obi: {path: "../obi"}
+
+sources:
+  - target: "all"
+    files:
+      - "i2c_reg_pkg.sv"
+      - "i2c.sv"

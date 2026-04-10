@@ -1,0 +1,192 @@
+# Process node
+set ::env(PROCESS) 130
+set ::env(DEF_UNITS_PER_MICRON) 1000
+
+if { ![info exist ::env(STD_CELL_LIBRARY)] } {
+	set ::env(STD_CELL_LIBRARY) sg13g2_stdcell
+}
+
+if { ![info exist ::env(PAD_CELL_LIBRARY)] } {
+	set ::env(PAD_CELL_LIBRARY) sg13g2_io
+}
+
+# Tools
+set ::env(PRIMARY_GDSII_STREAMOUT_TOOL) "magic"
+
+# Placement site for core cells
+# This can be found in the technology lef
+set ::env(VDD_PIN) "VPWR"
+set ::env(GND_PIN) "VGND"
+
+set ::env(VDD_PIN_VOLTAGE) "1.20"
+set ::env(GND_PIN_VOLTAGE) "0.00"
+
+set ::env(SCL_POWER_PINS) "VDD"
+set ::env(SCL_GROUND_PINS) "VSS"
+
+# Technology LEF
+set ::env(TECH_LEF) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/lef/sg13g2_tech.lef"
+set ::env(TECH_LEF_MIN) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/lef/sg13g2_tech.lef"
+set ::env(TECH_LEF_MAX) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/lef/sg13g2_tech.lef"
+
+# Standard cells
+set ::env(CELL_LEFS) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/lef/$::env(STD_CELL_LIBRARY).lef"
+set ::env(CELL_GDS) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/gds/$::env(STD_CELL_LIBRARY).gds"
+set ::env(CELL_VERILOG_MODELS) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/verilog/$::env(STD_CELL_LIBRARY).v"
+set ::env(CELL_SPICE_MODELS) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/spice/$::env(STD_CELL_LIBRARY).spice"
+set ::env(CELL_CDLS) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/$::env(STD_CELL_LIBRARY)/cdl/$::env(STD_CELL_LIBRARY).cdl"
+
+# Pad cells
+set ::env(PAD_LEFS) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/sg13g2_io/lef/sg13g2_io.lef"
+set ::env(PAD_GDS) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/sg13g2_io/gds/sg13g2_io.gds"
+set ::env(PAD_VERILOG_MODELS) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/sg13g2_io/verilog/sg13g2_io.v"
+set ::env(PAD_SPICE_MODELS) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/sg13g2_io/spice/sg13g2_io.spi"
+set ::env(PAD_CDLS) "$::env(PDK_ROOT)/$::env(PDK)/libs.ref/sg13g2_io/cdl/sg13g2_io.cdl"
+
+## magic setup
+set ::env(MAGICRC) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/magic/ihp-sg13g2.magicrc"
+set ::env(MAGIC_TECH) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/magic/ihp-sg13g2.tech"
+
+# Klayout setup
+set ::env(KLAYOUT_TECH) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/sg13g2.lyt"
+set ::env(KLAYOUT_PROPERTIES) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/sg13g2.lyp"
+set ::env(KLAYOUT_DEF_LAYER_MAP) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/sg13g2.map"
+
+set ::env(KLAYOUT_DRC_RUNSET) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/drc/ihp-sg13g2.drc"
+set ::env(KLAYOUT_DRC_OPTIONS) [dict create]
+dict set ::env(KLAYOUT_DRC_OPTIONS) feol true
+dict set ::env(KLAYOUT_DRC_OPTIONS) beol true
+dict set ::env(KLAYOUT_DRC_OPTIONS) pin true
+dict set ::env(KLAYOUT_DRC_OPTIONS) forbidden true
+dict set ::env(KLAYOUT_DRC_OPTIONS) run_mode deep
+dict set ::env(KLAYOUT_DRC_OPTIONS) no_recommended true
+dict set ::env(KLAYOUT_DRC_OPTIONS) drc_json_default "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/drc/rule_decks/sg13g2_tech_default.json"
+
+set ::env(KLAYOUT_DENSITY_RUNSET) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/drc/rule_decks/density.drc"
+set ::env(KLAYOUT_DENSITY_OPTIONS) [dict create]
+dict set ::env(KLAYOUT_DENSITY_OPTIONS) drc_json_default "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/drc/rule_decks/sg13g2_tech_default.json"
+
+set ::env(KLAYOUT_ANTENNA_RUNSET) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/drc/rule_decks/antenna.drc"
+set ::env(KLAYOUT_ANTENNA_OPTIONS) [dict create]
+dict set ::env(KLAYOUT_ANTENNA_OPTIONS) drc_json_default "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/drc/rule_decks/sg13g2_tech_default.json"
+
+set ::env(KLAYOUT_FILLER_SCRIPT) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/scripts/filler.py"
+
+set ::env(KLAYOUT_LVS_SCRIPT) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/klayout/tech/lvs/sg13g2.lvs"
+set ::env(KLAYOUT_LVS_OPTIONS) [dict create run_mode deep ]
+
+# netgen setup
+set ::env(NETGEN_SETUP) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/netgen/ihp-sg13g2_setup.tcl"
+
+# No tap cells
+set ::env(FP_TAPCELL_DIST) 0
+
+# Tracks info
+set ::env(FP_TRACKS_INFO) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/$::env(STD_CELL_LIBRARY)/tracks.info"
+
+# Default Synth Exclude List
+set ::env(SYNTH_EXCLUDED_CELL_FILE) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/$::env(STD_CELL_LIBRARY)/synth_exclude.cells"
+
+# Default PNR Exclude List
+set ::env(PNR_EXCLUDED_CELL_FILE) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/$::env(STD_CELL_LIBRARY)/pnr_exclude.cells"
+
+## DRC Exclude List for Optimization library
+#set ::env(DRC_EXCLUDE_CELL_LIST_OPT) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/$::env(STD_CELL_LIBRARY_OPT)/drc_exclude.cells"
+
+# Open-RCX Rules File
+set ::env(RCX_RULES) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/IHP_rcx_patterns.rules"
+#set ::env(RCX_RULES_MIN) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/rules.openrcx.$::env(PDK).min.spef_extractor"
+#set ::env(RCX_RULES_MAX) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/rules.openrcx.$::env(PDK).max.spef_extractor"
+
+# Extra PDN configs
+set ::env(PDN_RAIL_LAYER) Metal1
+set ::env(PDN_RAIL_OFFSET) 0
+
+set ::env(PDN_VERTICAL_LAYER) TopMetal1
+set ::env(PDN_HORIZONTAL_LAYER) TopMetal2
+
+set ::env(PDN_VWIDTH) 2.2
+set ::env(PDN_VSPACING) 4.0
+set ::env(PDN_VPITCH) 75.6
+set ::env(PDN_VOFFSET) 13.6
+
+set ::env(PDN_HWIDTH) 2.2
+set ::env(PDN_HSPACING) 4.0
+set ::env(PDN_HPITCH) 75.6
+set ::env(PDN_HOFFSET) 13.6
+
+
+# Core Ring PDN defaults
+set ::env(PDN_CORE_RING_VWIDTH) 5.0
+set ::env(PDN_CORE_RING_HWIDTH) 5.0
+set ::env(PDN_CORE_RING_VSPACING) 2.0
+set ::env(PDN_CORE_RING_HSPACING) 2.0
+set ::env(PDN_CORE_RING_VOFFSET) 4.5
+set ::env(PDN_CORE_RING_HOFFSET) 4.5
+
+# PDN Macro blockages list
+set ::env(MACRO_BLOCKAGES_LAYER) "Metal1 Metal2 Metal3 Metal4 Metal5 TopMetal1"
+
+# Used for parasitics estimation, IR drop analysis, etc
+set ::env(LAYERS_RC) [dict create]
+
+# RC fit from OpenROAD
+# https://github.com/The-OpenROAD-Project/OpenROAD-flow-scripts/commit/a3ea4d0a4c10cb65a5314ed541dfc1bc42979f8d
+dict set ::env(LAYERS_RC) "*" Metal1 res 8.54576E-03
+dict set ::env(LAYERS_RC) "*" Metal1 cap 1e-10
+dict set ::env(LAYERS_RC) "*" Metal2 res 2.53519E-03
+dict set ::env(LAYERS_RC) "*" Metal2 cap 1.69121E-04
+dict set ::env(LAYERS_RC) "*" Metal3 res 1.54329E-03
+dict set ::env(LAYERS_RC) "*" Metal3 cap 1.82832E-04
+dict set ::env(LAYERS_RC) "*" Metal4 res 6.31424E-04
+dict set ::env(LAYERS_RC) "*" Metal4 cap 1.66454E-04
+dict set ::env(LAYERS_RC) "*" Metal5 res 6.84051E-04
+dict set ::env(LAYERS_RC) "*" Metal5 cap 8.57431E-05
+
+# default values as converted by OpenROAD from the tech lef
+#dict set ::env(LAYERS_RC) "*" Metal1 res 8.437500e-04
+#dict set ::env(LAYERS_RC) "*" Metal1 cap 6.878400e-05
+#dict set ::env(LAYERS_RC) "*" Metal2 res 5.150000e-04
+#dict set ::env(LAYERS_RC) "*" Metal2 cap 9.302000e-05
+#dict set ::env(LAYERS_RC) "*" Metal3 res 5.150000e-04
+#dict set ::env(LAYERS_RC) "*" Metal3 cap 9.200000e-05
+#dict set ::env(LAYERS_RC) "*" Metal4 res 5.150000e-04
+#dict set ::env(LAYERS_RC) "*" Metal4 cap 9.178800e-05
+#dict set ::env(LAYERS_RC) "*" Metal5 res 5.150000e-04
+#dict set ::env(LAYERS_RC) "*" Metal5 cap 8.882600e-05
+#dict set ::env(LAYERS_RC) "*" TopMetal1 res 1.280488e-05
+#dict set ::env(LAYERS_RC) "*" TopMetal1 cap 1.108496e-04
+#dict set ::env(LAYERS_RC) "*" TopMetal2 res 7.250000e-06
+#dict set ::env(LAYERS_RC) "*" TopMetal2 cap 9.006000e-05
+
+set ::env(VIAS_R) [dict create]
+
+dict set ::env(VIAS_R) "*" Cont res 2.2E-3
+dict set ::env(VIAS_R) "*" Via1 res 2.0E-3
+dict set ::env(VIAS_R) "*" Via2 res 2.0E-3
+dict set ::env(VIAS_R) "*" Via3 res 2.0E-3
+dict set ::env(VIAS_R) "*" Via4 res 2.0E-3
+dict set ::env(VIAS_R) "*" TopVia1 res 0.4E-3
+dict set ::env(VIAS_R) "*" TopVia2 res 0.22E-3
+
+# Don't set DATA_WIRE_RC_LAYER, CLOCK_WIRE_RC_LAYER
+# Have been renamed to SIGNAL_WIRE_RC_LAYERS, CLOCK_WIRE_RC_LAYERS
+# If unset, RT_MIN_LAYER and RT_MAX_LAYER are used for the calculation
+
+#set ::env(DATA_WIRE_RC_LAYER) "Metal2"
+#set ::env(CLOCK_WIRE_RC_LAYER) "Metal5"
+
+# I/O Layer info
+set ::env(FP_IO_HLAYER) "Metal3"
+set ::env(FP_IO_VLAYER) "Metal2"
+
+# Routing Layer Info
+set ::env(GRT_LAYER_ADJUSTMENTS) "0.00,0.00,0.00,0.00,0.00,0.00,0.00"
+
+set ::env(RT_MIN_LAYER) "Metal2"
+set ::env(RT_MAX_LAYER) "TopMetal2"
+
+#set ::env(RT_CLOCK_MIN_LAYER) "met3"
+
+## CVC
+#set ::env(CVC_SCRIPTS_DIR) "$::env(PDK_ROOT)/$::env(PDK)/libs.tech/librelane/cvc"
