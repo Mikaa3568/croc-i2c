@@ -173,18 +173,18 @@ Kết quả từ OpenROAD sau synthesis + place & route (IHP SG13G2 130nm):
 |----------|---------|
 | Die Area | **3,671,056 µm²** (≈ 1.916 mm × 1.916 mm) |
 | Core Area | **1,571,082 µm²** |
-| Total Active Area | **729,518 µm²** |
-| Core Utilization | **46.4%** |
-| Std Cell Utilization | **39.2%** |
+| Total Active Area | **691,094 µm²** |
+| Core Utilization | **44.0%** |
+| Std Cell Utilization | **36.5%** |
 
 ### 5.2 Khối I2C
 
 | Instance | Area (µm²) | Std Cells | % Core |
 |----------|-----------|-----------|--------|
-| `i_user` (toàn bộ user_domain) | **10,915 µm²** | 672 | 0.69% |
-| `i_i2c` (I2C master) | **8,640 µm²** | 466 | 0.55% |
+| `i_user` (toàn bộ user_domain) | **11,623 µm²** | 726 | 0.74% |
+| `i_i2c` (I2C master) | **9,275 µm²** | 520 | 0.59% |
 
-> **Nhận xét:** Khối I2C chiếm **~79% diện tích của user_domain** và chỉ ~0.55% diện tích core.
+> **Nhận xét:** Khối I2C chiếm **~80% diện tích của user_domain** và chỉ ~0.59% diện tích core.
 > Đây là tỷ lệ hợp lý cho một ngoại vi I2C full-featured.
 
 ### 5.3 Sub-modules trong i_i2c (ước tính)
@@ -340,27 +340,43 @@ croc/
 
 ---
 
-## 8. Ví dụ sử dụng phần mềm
+## 8. Ví dụ sử dụng phần mềm (Continuous Write)
+
+Dưới đây là ví dụ code C để gửi liên tục một chuỗi ký tự ("HELLO") qua giao thức I2C bằng phương pháp kiểm tra cờ `TIP` (Transfer In Progress):
 
 ```c
 #include "i2c.h"
 #include "util.h"
 #include "config.h"
 
-// Khởi tạo I2C tại 100 kHz (clk = 20 MHz)
-i2c_init(99);   // prescaler = 99 → SCL = 20MHz / (2*100) = 100kHz
+#define I2C_SLAVE_ADDR   0x50
+#define I2C_PRESCALE_VAL 39   // ~250kHz SCL at 20MHz clk
 
-// Ghi 1 byte lên slave địa chỉ 0x50
-*reg32(I2C_BASE_ADDR, I2C_TX_DATA_OFFSET) = (0x50 << 1) | 0;  // addr + WR
-*reg32(I2C_BASE_ADDR, I2C_CMD_OFFSET) = I2C_CMD_START | I2C_CMD_WRITE;
-while (*reg32(I2C_BASE_ADDR, I2C_STATUS_OFFSET) & I2C_STATUS_TIP) {}
+void i2c_send_hello() {
+    // 1. Khởi tạo I2C
+    i2c_init(I2C_PRESCALE_VAL);
 
-*reg32(I2C_BASE_ADDR, I2C_TX_DATA_OFFSET) = 0xAB;              // data
-*reg32(I2C_BASE_ADDR, I2C_CMD_OFFSET) = I2C_CMD_WRITE | I2C_CMD_STOP;
-while (*reg32(I2C_BASE_ADDR, I2C_STATUS_OFFSET) & I2C_STATUS_TIP) {}
+    // 2. Gửi byte địa chỉ slave (Lệnh START + WRITE)
+    *reg32(I2C_BASE_ADDR, I2C_TX_DATA_OFFSET) = (I2C_SLAVE_ADDR << 1) | 0;
+    *reg32(I2C_BASE_ADDR, I2C_CMD_OFFSET)     = I2C_CMD_START | I2C_CMD_WRITE;
+    while (*reg32(I2C_BASE_ADDR, I2C_STATUS_OFFSET) & I2C_STATUS_TIP) {} // Chờ gửi xong
 
-// Đọc ACK/NACK
-uint8_t ack = (*reg32(I2C_BASE_ADDR, I2C_STATUS_OFFSET) & I2C_STATUS_RXACK) ? 0 : 1;
+    // 3. Gửi liên tục mảng dữ liệu (Multi-byte write)
+    const uint8_t data[] = {'H', 'E', 'L', 'L', 'O'};
+    for (int i = 0; i < 5; i++) {
+        *reg32(I2C_BASE_ADDR, I2C_TX_DATA_OFFSET) = data[i];
+        
+        if (i == 4) {
+            // Byte cuối cùng: Gửi dữ liệu kèm lệnh STOP
+            *reg32(I2C_BASE_ADDR, I2C_CMD_OFFSET) = I2C_CMD_WRITE | I2C_CMD_STOP | I2C_CMD_IACK;
+        } else {
+            // Các byte giữa: Chỉ gửi lệnh WRITE tiếp tục
+            *reg32(I2C_BASE_ADDR, I2C_CMD_OFFSET) = I2C_CMD_WRITE | I2C_CMD_IACK;
+        }
+        
+        while (*reg32(I2C_BASE_ADDR, I2C_STATUS_OFFSET) & I2C_STATUS_TIP) {} // Chờ gửi xong
+    }
+}
 ```
 
 ---
