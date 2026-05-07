@@ -64,7 +64,7 @@ grt::set_verbose 0
 
 # Repair design using global route parasitics
 utl::report "Perform buffer insertion..."
-repair_design -verbose
+repair_design -slew_margin 20 -cap_margin 20 -max_wire_length 100 -verbose
 
 utl::report "Repair setup and hold violations..."
 repair_timing -setup -verbose -repair_tns 100

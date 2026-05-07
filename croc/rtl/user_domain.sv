@@ -114,20 +114,24 @@ module user_domain import user_pkg::*; import croc_pkg::*; #(
 // User Subordinates
 //-------------------------------------------------------------------------------------------------
 
-  // I2C Subordinate
+// --- MIKA FIX: NỐI DÂY CHÍNH XÁC ĐỂ KHÔNG BỊ TỐI ƯU MẤT CELLS ---
   i2c i_i2c (
-    .clk_i,
-    .rst_ni,
-    .i2c_sda_i,
-    .i2c_sda_o,
-    .i2c_sda_oe,
-    .i2c_scl_i,
-    .i2c_scl_o,
-    .i2c_scl_oe,
+    .clk_i      ( clk_i   ),
+    .rst_ni     ( rst_ni  ),
+    
+    // Nối chân của module i2c vào đúng Port của user_domain
+    .i2c_sda_i  ( i2c_sda_i  ), // Tín hiệu vào từ Pad
+    .i2c_sda_o  ( i2c_sda_o  ), // Tín hiệu ra Pad
+    .i2c_sda_oe ( i2c_sda_oe ), // Điều khiển hướng (Output Enable)
+    
+    .i2c_scl_i  ( i2c_scl_i  ), // Kết nối SCL input từ Pad
+    .i2c_scl_o  ( i2c_scl_o  ), // Tín hiệu Clock ra Pad
+    .i2c_scl_oe ( i2c_scl_oe ), // Điều khiển hướng SCL (phải kết nối - không để trống)
+    
+    // Kết nối Bus OBI
     .obi_req_i  ( user_design_obi_req ),
     .obi_rsp_o  ( user_design_obi_rsp )
   );
-
   // Error Subordinate
   obi_err_sbr #(
     .ObiCfg      ( SbrObiCfg     ),

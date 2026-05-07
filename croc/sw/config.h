@@ -17,6 +17,7 @@
 #define OBI_TIMER_BASE_ADDR 0x0300A000
 #define IDMA_BASE_ADDR      0x0300B000
 #define USER_ROM_BASE_ADDR  0x20000000
+#define I2C_BASE_ADDR       0x20000000  // I2C master (user domain UserDesign slot)
 
 // Frequencies
 #define TB_FREQUENCY        20000000

@@ -64,6 +64,8 @@ build_verilator() {
         -Wno-WIDTHTRUNC \
         -Wno-WIDTHCONCAT \
         -Wno-ASCRANGE \
+        -Wno-UNSIGNED \
+        -Wno-UNOPTFLAT \
         --binary \
         -j 0 \
         --timing \
@@ -78,6 +80,7 @@ build_verilator() {
         -O3 \
         --top tb_croc_soc \
         -f croc.f 2>&1 | \
+        grep -v '^ccache\|^make:\|^g++\|^ar ' | \
         tee ${PROJ_NAME}_build.log"
 }
 

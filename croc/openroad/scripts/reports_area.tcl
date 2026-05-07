@@ -193,6 +193,56 @@ proc print_report {sorted_hierarchies stats_ref block_ref dbu_per_uu} {
         $local_insts(total) $local_insts(stdcell) $local_insts(macro) $local_insts(cover) $local_insts(pad) \
         ]
     }
+
+    # -----------------------------------------------------------------------
+    # I2C Pin & Sub-module Summary
+    # Printed after the hierarchy table whenever i_i2c is present.
+    # -----------------------------------------------------------------------
+    set i2c_found 0
+    foreach h $sorted_hierarchies {
+        if {[string match "*i_i2c" $h]} { set i2c_found 1; break }
+    }
+    if {$i2c_found} {
+        report_puts ""
+        report_puts "================================================================================"
+        report_puts "I2C Master Pin Summary  (instance: ...i_user/i_i2c)"
+        report_puts "================================================================================"
+        report_puts ""
+        report_puts "  Open-drain model: OE=1 pulls line LOW; OE=0 releases (external pull-up)"
+        report_puts ""
+        report_puts "  Chip top-level ports (bidirectional inout pads):"
+        report_puts "    i2c_sda_io  \[inout\] -- pad_i2c_sda_io (sg13g2_IOPadInOut30mA)"
+        report_puts "    i2c_scl_io  \[inout\] -- pad_i2c_scl_io (sg13g2_IOPadInOut30mA)"
+        report_puts ""
+        report_puts "  Internal signals (croc_chip -> croc_soc -> user_domain -> i_i2c):"
+        report_puts "  +------------------+--------+--------------------------------------------+"
+        report_puts "  | Signal           | Dir    | Description                                |"
+        report_puts "  +------------------+--------+--------------------------------------------+"
+        report_puts "  | i2c_sda_i        | input  | SDA sampled from pad (after pull-up)       |"
+        report_puts "  | i2c_sda_o        | output | Always 0; line driven low when sda_oe=1    |"
+        report_puts "  | i2c_sda_oe       | output | 1=pull SDA low (START/data/STOP bits)      |"
+        report_puts "  | i2c_scl_i        | input  | SCL sampled from pad (clock-stretch detect)|"
+        report_puts "  | i2c_scl_o        | output | Always 0; line driven low when scl_oe=1    |"
+        report_puts "  | i2c_scl_oe       | output | 1=pull SCL low (controls SCL timing)       |"
+        report_puts "  +------------------+--------+--------------------------------------------+"
+        report_puts ""
+        report_puts "  i_i2c sub-module hierarchy:"
+        report_puts "    i_clkgen  -- SCL prescaler (16-bit divider -> clk_en pulses)"
+        report_puts "    i_ctrl    -- Bit-level FSM  (START/STOP/WR/RD/ACK states)"
+        report_puts "    i_regif   -- OBI register interface (PRESCALER/CTR/TXR/RXR/CR/SR)"
+        report_puts ""
+        report_puts "  OBI Register Map (byte offset, 32-bit word access):"
+        report_puts "    0x00  PRESCALER_LO  [7:0]  SCL divider low byte"
+        report_puts "    0x04  PRESCALER_HI  [7:0]  SCL divider high byte"
+        report_puts "    0x08  CTR           [7]=EN (core enable), [6]=IEN (interrupt enable)"
+        report_puts "    0x0C  TXR           [7:0]  transmit register (addr+RW or data)"
+        report_puts "    0x10  RXR           [7:0]  receive register  (read-only)"
+        report_puts "    0x14  CR            [7]=STA [6]=STO [5]=RD [4]=WR [3]=ACK [0]=IACK"
+        report_puts "    0x18  SR            [7]=RxACK [6]=BUSY [5]=AL [1]=TIP [0]=IF"
+        report_puts ""
+        report_puts "  Default: prescaler=0x00F9(249) -> SCL=50MHz/(2*250)=100kHz (standard I2C)"
+        report_puts "================================================================================"
+    }
 }
 
 # Save the report to a CSV file

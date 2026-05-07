@@ -129,6 +129,78 @@ module tb_croc_soc #(
   //  Testbench  //
   /////////////////
 
+  // I2C Bus Pullups and Dummy Slave Model
+  wire scl = i2c_scl_oe ? i2c_scl_o : 1'b1;
+  wire sda_master = i2c_sda_oe ? i2c_sda_o : 1'b1;
+  
+  logic sda_slave_oe = 0;
+  wire sda = sda_master & (sda_slave_oe ? 1'b0 : 1'b1);
+  
+  assign i2c_scl_i = scl;
+  assign i2c_sda_i = sda;
+
+  int i2c_bit_cnt = 0;
+  logic i2c_started = 0;
+  logic is_address_byte = 0;
+  logic [7:0] i2c_rx_data;
+
+  logic scl_d1 = 1, scl_d2 = 1;
+  logic sda_d1 = 1, sda_d2 = 1;
+  
+  always @(posedge sys_clk) begin
+    if (rst_n == 1'b0) begin
+      scl_d1 <= 1'b1; scl_d2 <= 1'b1;
+      sda_d1 <= 1'b1; sda_d2 <= 1'b1;
+      i2c_started <= 1'b0;
+      sda_slave_oe <= 1'b0;
+      i2c_bit_cnt <= 0;
+    end else begin
+      scl_d1 <= scl;
+      scl_d2 <= scl_d1;
+      sda_d1 <= sda;
+      sda_d2 <= sda_d1;
+      
+      // START: sda falls while scl is high
+      if (scl_d2 == 1'b1 && scl_d1 == 1'b1 && sda_d2 == 1'b1 && sda_d1 == 1'b0) begin
+        i2c_started <= 1'b1;
+        i2c_bit_cnt <= 0;
+        sda_slave_oe <= 1'b0;
+        is_address_byte <= 1'b1;
+      end
+      // STOP: sda rises while scl is high
+      else if (scl_d2 == 1'b1 && scl_d1 == 1'b1 && sda_d2 == 1'b0 && sda_d1 == 1'b1) begin
+        i2c_started <= 1'b0;
+        sda_slave_oe <= 1'b0;
+      end
+      else if (i2c_started) begin
+        // SCL Falling edge
+        if (scl_d2 == 1'b1 && scl_d1 == 1'b0) begin
+          if (i2c_bit_cnt == 9) begin
+            i2c_bit_cnt <= 1;
+            sda_slave_oe <= 1'b0;
+          end else begin
+            i2c_bit_cnt <= i2c_bit_cnt + 1;
+            if (i2c_bit_cnt == 8) begin
+              sda_slave_oe <= 1'b1; // assert ACK
+              if (is_address_byte) begin
+                $display("@%0t | [I2C Slave] Nhận được Address: 0x%02x (Read/Write: %s)", $time, i2c_rx_data, i2c_rx_data[0] ? "READ" : "WRITE");
+                is_address_byte <= 1'b0;
+              end else begin
+                $display("@%0t | [I2C Slave] Nhận được Data: 0x%02x (Ký tự: '%c')", $time, i2c_rx_data, i2c_rx_data);
+              end
+            end
+          end
+        end
+        // SCL Rising edge
+        else if (scl_d2 == 1'b0 && scl_d1 == 1'b1) begin
+          if (i2c_bit_cnt >= 1 && i2c_bit_cnt <= 8) begin
+            i2c_rx_data <= {i2c_rx_data[6:0], sda_master};
+          end
+        end
+      end
+    end
+  end
+
   logic [31:0] tb_data;
 
   initial begin
