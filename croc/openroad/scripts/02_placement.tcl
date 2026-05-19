@@ -54,8 +54,8 @@ repair_tie_fanout $tieLoPin
 utl::report "Remove buffers"
 remove_buffers
 
-utl::report "Repair design"
-repair_design -verbose
+utl::report "Repair design (pre-place)"
+repair_design -cap_margin 30 -max_wire_length 100 -verbose
 
 save_checkpoint 02-01_${proj_name}.pre_place
 
@@ -82,8 +82,8 @@ save_checkpoint 02-02_${proj_name}.gpl1
 
 utl::report "Estimate parasitics"
 estimate_parasitics -placement
-utl::report "Repair design"
-repair_design -verbose
+utl::report "Repair design (post-GPL1)"
+repair_design -cap_margin 40 -max_wire_length 80 -verbose
 save_checkpoint 02-02_${proj_name}.gpl1_fix
 
 utl::report "Repair setup"
@@ -113,6 +113,11 @@ utl::report "Optimize mirroring"
 optimize_mirroring
 
 utl::report "Estimate parasitics"
+estimate_parasitics -placement
+
+utl::report "Repair design (post-DPL - cap focus)"
+repair_design -cap_margin 50 -max_wire_length 80 -verbose
+detailed_placement
 estimate_parasitics -placement
 
 report_metrics "02_${proj_name}.placed"

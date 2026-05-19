@@ -244,6 +244,17 @@ module croc_vip #(
           byte_count = 0;
         end
       end
+
+      // Flush remaining partial word (1-3 bytes) at end of line/block
+      if (byte_count > 0) begin
+        // Shift data right to align bytes to correct positions
+        // e.g. 3 bytes: shift right by 8 bits so byte0 ends up at [7:0]
+        data = data >> ((4 - byte_count) * 8);
+        jtag_write(dm::SBData0, data);
+        addr += 4;
+        data = 32'h0;
+        byte_count = 0;
+      end
     end
     jtag_dbg.write_dmi(dm::SBCS, JtagInitSbcs);
     $fclose(file);

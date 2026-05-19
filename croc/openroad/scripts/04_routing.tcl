@@ -62,9 +62,12 @@ report_image "04-01_${proj_name}.grt" true false false true
 
 grt::set_verbose 0
 
-# Repair design using global route parasitics
-utl::report "Perform buffer insertion..."
-repair_design -slew_margin 20 -cap_margin 20 -max_wire_length 100 -verbose
+# Repair design using global route parasitics (aggressive cap repair)
+utl::report "Perform buffer insertion (pass 1)..."
+repair_design -slew_margin 20 -cap_margin 40 -max_wire_length 80 -verbose
+
+utl::report "Perform buffer insertion (pass 2 - cap focus)..."
+repair_design -slew_margin 10 -cap_margin 50 -verbose
 
 utl::report "Repair setup and hold violations..."
 repair_timing -setup -verbose -repair_tns 100

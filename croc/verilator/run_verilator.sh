@@ -23,7 +23,7 @@ source "../env.sh"
 
 show_help() {
     cat << EOF
-Verilator Coordinator
+Verilator Coordinator  
 
 Usage:
     ./run_verilator.sh [OPTIONS]

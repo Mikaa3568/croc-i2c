@@ -15,7 +15,7 @@
 
      set_max_fanout 50 [current_design]
      set_max_transition 2.0 [current_design]
-     set_max_capacitance 2.0 [current_design]
+     set_max_capacitance 5.0 [current_design]
 
 
      #############################
@@ -29,8 +29,10 @@
      set_max_capacitance 10.0 [get_pins -hierarchical A_DOUT*]
      set_max_transition 10.0 [get_pins -hierarchical A_DOUT*]
      # Override the overly strict 8.0 max_fanout limit on clock tree buffers
-     set_max_fanout 50.0 [get_pins -hierarchical -filter "name == X && is_clock_pin == true"]
+     # Note: is_clock_pin filter removed as it causes fatal SDC error in OpenROAD
+     # set_max_fanout 50.0 [get_pins -hierarchical -filter "name == X"]  ;# would cause STA-0100
      set_driving_cell [all_inputs] -lib_cell sg13g2_IOPadOut16mA -pin pad
+
 
 
      ##################

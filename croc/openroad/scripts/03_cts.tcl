@@ -68,6 +68,10 @@ set_propagated_clock [all_clocks]
 
 report_metrics "03_${proj_name}.cts_unrepaired"
 
+# Repair design DRVs (capacitance, slew) after CTS
+utl::report "Repair design (post-CTS)"
+repair_design -slew_margin 20 -cap_margin 30 -verbose
+
 # Repair all setup timing
 utl::report "Repair setup"
 repair_timing -setup -verbose

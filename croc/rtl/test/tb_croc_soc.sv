@@ -143,6 +143,10 @@ module tb_croc_soc #(
   logic i2c_started = 0;
   logic is_address_byte = 0;
   logic [7:0] i2c_rx_data;
+  logic [7:0] i2c_tx_data = 8'hA5; // Data slave gửi khi master READ
+  logic is_read_mode = 0;
+  logic [7:0] i2c_tx_shift;         // Shift register: dịch trái từng bit khi gửi (giống rx_data nhưng shift-out)
+  wire  i2c_tx_bit = i2c_tx_shift[7]; // bit hiện tại đang được gửi (hiển thị trong waveform)
 
   logic scl_d1 = 1, scl_d2 = 1;
   logic sda_d1 = 1, sda_d2 = 1;
@@ -177,24 +181,52 @@ module tb_croc_soc #(
         if (scl_d2 == 1'b1 && scl_d1 == 1'b0) begin
           if (i2c_bit_cnt == 9) begin
             i2c_bit_cnt <= 1;
-            sda_slave_oe <= 1'b0;
+            if (is_read_mode) begin
+              // Load toàn bộ data (sẽ shift từng bit ở SCL rising edge)
+              i2c_tx_shift <= i2c_tx_data; 
+              sda_slave_oe <= ~i2c_tx_data[7];
+            end else begin
+              sda_slave_oe <= 1'b0;
+            end
           end else begin
             i2c_bit_cnt <= i2c_bit_cnt + 1;
             if (i2c_bit_cnt == 8) begin
-              sda_slave_oe <= 1'b1; // assert ACK
+              // ACK/NACK phase
               if (is_address_byte) begin
-                $display("@%0t | [I2C Slave] Nhận được Address: 0x%02x (Read/Write: %s)", $time, i2c_rx_data, i2c_rx_data[0] ? "READ" : "WRITE");
+                sda_slave_oe <= 1'b1; // ACK address
+                $display("@%0t | [I2C Slave] Nhận được Address: 0x%02x (R/W: %s)",
+                         $time, i2c_rx_data, i2c_rx_data[0] ? "READ" : "WRITE");
                 is_address_byte <= 1'b0;
+                if (i2c_rx_data[0]) is_read_mode <= 1'b1;
+              end else if (is_read_mode) begin
+                sda_slave_oe <= 1'b0; // nhả SDA cho master ACK/NACK
+                // Kiểm tra TX: i2c_tx_shift phải = i2c_tx_data (bits tích lũy == dữ liệu gốc)
+                if (i2c_tx_shift == i2c_tx_data)
+                  $display("@%0t | [I2C Slave] TX OK:   sent 0x%02x, verified 0x%02x ✓",
+                           $time, i2c_tx_data, i2c_tx_shift);
+                else
+                  $error ("@%0t | [I2C Slave] TX FAIL: sent 0x%02x, but got 0x%02x ✗",
+                           $time, i2c_tx_data, i2c_tx_shift);
+                i2c_tx_data  <= i2c_tx_data + 1;
+                is_read_mode <= 1'b0;
               end else begin
-                $display("@%0t | [I2C Slave] Nhận được Data: 0x%02x (Ký tự: '%c')", $time, i2c_rx_data, i2c_rx_data);
+                sda_slave_oe <= 1'b1; // ACK write data
+                $display("@%0t | [I2C Slave] Nhận được Data: 0x%02x (Ký tự: '%c')",
+                         $time, i2c_rx_data, i2c_rx_data);
               end
+            end else if (is_read_mode) begin
+              // Drive bit tiếp theo lên SDA (việc shift-in đã được làm ở rising edge)
+              sda_slave_oe  <= ~i2c_tx_shift[7];
             end
           end
         end
         // SCL Rising edge
         else if (scl_d2 == 1'b0 && scl_d1 == 1'b1) begin
           if (i2c_bit_cnt >= 1 && i2c_bit_cnt <= 8) begin
-            i2c_rx_data <= {i2c_rx_data[6:0], sda_master};
+            if (!is_read_mode)
+              i2c_rx_data  <= {i2c_rx_data[6:0], sda_master}; // WRITE: master→slave
+            else
+              i2c_tx_shift <= {i2c_tx_shift[6:0], sda};       // READ:  slave→master (đối xứng)
           end
         end
       end
@@ -246,9 +278,11 @@ module tb_croc_soc #(
       `ifdef VERILATOR
         $dumpfile("croc.fst");
         $dumpvars(1, i_croc_soc);
+        $dumpvars(1, tb_croc_soc); // dump tất cả TB-level signals
       `else
         $dumpfile("croc.vcd");
         $dumpvars(1, i_croc_soc);
+        $dumpvars(1, tb_croc_soc);
       `endif
     `endif
   end

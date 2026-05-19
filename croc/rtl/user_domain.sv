@@ -114,7 +114,7 @@ module user_domain import user_pkg::*; import croc_pkg::*; #(
 // User Subordinates
 //-------------------------------------------------------------------------------------------------
 
-// --- MIKA FIX: NỐI DÂY CHÍNH XÁC ĐỂ KHÔNG BỊ TỐI ƯU MẤT CELLS ---
+
   i2c i_i2c (
     .clk_i      ( clk_i   ),
     .rst_ni     ( rst_ni  ),

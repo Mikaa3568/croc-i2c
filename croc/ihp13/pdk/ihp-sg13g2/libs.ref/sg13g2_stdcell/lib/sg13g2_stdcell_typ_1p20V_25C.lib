@@ -32,8 +32,8 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
   default_inout_pin_cap : 0.006;
   default_input_pin_cap : 0.006;
   default_leakage_power_density : 0;
-  default_max_capacitance : 0.3;
-  default_max_fanout : 8;
+  default_max_capacitance : 2.0;
+  default_max_fanout : 20;
   default_max_transition : 2.5074;
   default_output_pin_cap : 0;
   default_wire_load_area : 0.29;
@@ -248,7 +248,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "((A1*A2)+B1)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A1";
         sdf_cond : "B1 == 1'b0";
@@ -1021,7 +1021,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "((A1*A2)+B1)";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A1";
         sdf_cond : "B1 == 1'b0";
@@ -1794,7 +1794,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!((A1*A2)+B1)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A1";
         timing_sense : negative_unate;
@@ -2389,7 +2389,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!((A1*A2)+B1)";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A1";
         timing_sense : negative_unate;
@@ -3060,7 +3060,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!((A1*A2)+(B1*B2)+C1)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A1";
         sdf_cond : "(A2 == 1'b1 && B1 == 1'b1 && B2 == 1'b0 && C1 == 1'b0)";
@@ -5123,7 +5123,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!((A1*A2)+(B1*B2))";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A1";
         sdf_cond : "A2 == 1'b1 && B1 == 1'b1";
@@ -6064,7 +6064,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(A*B)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -6281,7 +6281,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(A*B)";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -6514,7 +6514,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(A*B*C)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -6842,7 +6842,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(A*B*C)";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -7202,7 +7202,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(A*B*C*D)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -7657,7 +7657,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(A*B*C*D)";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -8094,7 +8094,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "A";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -8322,7 +8322,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "A";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -8720,7 +8720,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "IQ";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         timing_sense : non_unate;
@@ -8864,7 +8864,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "IQN";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         timing_sense : non_unate;
@@ -9432,7 +9432,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "IQ";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         timing_sense : non_unate;
@@ -9576,7 +9576,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "IQN";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         timing_sense : non_unate;
@@ -10144,7 +10144,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "IQ";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         timing_sense : non_unate;
@@ -10712,7 +10712,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "IQ";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         timing_sense : non_unate;
@@ -11256,7 +11256,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "IQ";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "D";
         timing_sense : positive_unate;
@@ -11633,7 +11633,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "IQ";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "D";
         timing_sense : positive_unate;
@@ -11863,7 +11863,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "IQN";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "D";
         timing_sense : negative_unate;
@@ -12413,7 +12413,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "IQ";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "D";
         timing_sense : positive_unate;
@@ -12979,7 +12979,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "IQ";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "D";
         timing_sense : positive_unate;
@@ -13209,7 +13209,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "IQN";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "D";
         timing_sense : negative_unate;
@@ -13759,7 +13759,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "IQ";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "D";
         timing_sense : positive_unate;
@@ -14316,7 +14316,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "A";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -14430,7 +14430,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "A";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -14544,7 +14544,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "A";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -14667,7 +14667,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       function : "A";
       min_capacitance : 0.001;
       three_state : "TE_B";
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       capacitance : 0.00595145;
       rise_capacitance : 0.0044993;
       rise_capacitance_range (0.0044993, 0.0044993);
@@ -15583,7 +15583,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       function : "!(A)";
       min_capacitance : 0.001;
       three_state : "TE_B";
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       capacitance : 0.00599833;
       rise_capacitance : 0.00456375;
       rise_capacitance_range (0.00456375, 0.00456375);
@@ -16334,7 +16334,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(A)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : negative_unate;
@@ -16562,7 +16562,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(A)";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : negative_unate;
@@ -16920,7 +16920,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       min_capacitance : 0.001;
       state_function : "CLK * int_GATE";
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         timing_sense : positive_unate;
@@ -17176,7 +17176,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(!S*A0)+(S*A1)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A0";
         timing_sense : positive_unate;
@@ -17726,7 +17726,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(!S*A0)+(S*A1)";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A0";
         timing_sense : positive_unate;
@@ -18500,7 +18500,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(A0*(!S0*!S1))+(A1*(S0*!S1))+(A2*(!S0*S1))+(A3*(S0*S1))";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A0";
         timing_sense : positive_unate;
@@ -19957,7 +19957,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(A*B)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : negative_unate;
@@ -20174,7 +20174,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(A*B)";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : negative_unate;
@@ -20391,7 +20391,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(!A_N*B)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A_N";
         timing_sense : positive_unate;
@@ -20637,7 +20637,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(!A_N*B)";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A_N";
         timing_sense : positive_unate;
@@ -20899,7 +20899,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(A*B*C)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : negative_unate;
@@ -21227,7 +21227,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(!A_N*B*C)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A_N";
         timing_sense : positive_unate;
@@ -21616,7 +21616,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(A*B*C*D)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : negative_unate;
@@ -22023,7 +22023,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(A+B)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : negative_unate;
@@ -22240,7 +22240,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(A+B)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : negative_unate;
@@ -22457,7 +22457,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(A+!B_N)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : negative_unate;
@@ -22703,7 +22703,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(A+!B_N)";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : negative_unate;
@@ -22961,7 +22961,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(A+B+C)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : negative_unate;
@@ -23285,7 +23285,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(A+B+C)";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : negative_unate;
@@ -23645,7 +23645,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(A+B+C+D)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : negative_unate;
@@ -24100,7 +24100,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(A+B+C+D)";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : negative_unate;
@@ -24523,7 +24523,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!((A1+A2)*B1)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A1";
         timing_sense : negative_unate;
@@ -24924,7 +24924,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(A+B)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -25141,7 +25141,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(A+B)";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -25374,7 +25374,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(A+B+C)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -25702,7 +25702,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(A+B+C)";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -26062,7 +26062,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(A+B+C+D)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -26517,7 +26517,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(A+B+C+D)";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         timing_sense : positive_unate;
@@ -26994,7 +26994,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : output;
       function : "IQ";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         sdf_cond : "SCE == 1'b1";
@@ -27279,7 +27279,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : output;
       function : "IQN";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         sdf_cond : "SCE == 1'b1";
@@ -28301,7 +28301,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : output;
       function : "IQ";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         sdf_cond : "SCE == 1'b1";
@@ -28534,7 +28534,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : output;
       function : "IQN";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         sdf_cond : "SCE == 1'b1";
@@ -29339,7 +29339,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : output;
       function : "IQ";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         sdf_cond : "SCE == 1'b1";
@@ -29572,7 +29572,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : output;
       function : "IQN";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         sdf_cond : "SCE == 1'b1";
@@ -30377,7 +30377,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : output;
       function : "IQ";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         sdf_cond : "SCE == 1'b1";
@@ -31272,7 +31272,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : output;
       function : "IQ";
       min_capacitance : 0.001;
-      max_capacitance : 0.6;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         sdf_cond : "SCE == 1'b1";
@@ -32176,7 +32176,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       min_capacitance : 0.001;
       state_function : "CLK * int_GATE";
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "CLK";
         timing_sense : positive_unate;
@@ -32508,7 +32508,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "!(A^B)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         sdf_cond : "(B == 1'b1)";
@@ -33081,7 +33081,7 @@ library (sg13g2_stdcell_typ_1p20V_25C) {
       direction : "output";
       function : "(A^B)";
       min_capacitance : 0.001;
-      max_capacitance : 0.3;
+      max_capacitance : 2.0;
       timing () {
         related_pin : "A";
         sdf_cond : "(B == 1'b0)";

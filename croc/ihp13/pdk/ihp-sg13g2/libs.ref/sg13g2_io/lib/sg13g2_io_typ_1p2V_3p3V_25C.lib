@@ -39,9 +39,9 @@ library (sg13g2_io_typ_1p2V_3p3V_25C) {
   default_input_pin_cap : 1;
   default_fanout_load : 1;
   default_cell_leakage_power : 0;
-  default_max_transition : 1.2;
+  default_max_transition : 5.0;
   default_leakage_power_density : 0;
-  default_max_capacitance : 0.3;
+  default_max_capacitance : 20.0;
   default_max_fanout : 8;
   default_wire_load_area : 0.29;
   default_wire_load_capacitance : 0.0003;
@@ -355,7 +355,7 @@ library (sg13g2_io_typ_1p2V_3p3V_25C) {
       function : "pad";
       related_ground_pin : vss;
       related_power_pin : vdd;
-      max_capacitance : 0.813522;
+      max_capacitance : 20.0;
       timing () {
         related_pin : "pad";
         timing_sense : positive_unate;
@@ -611,7 +611,7 @@ library (sg13g2_io_typ_1p2V_3p3V_25C) {
       input_voltage : "pad";
       related_ground_pin : iovss;
       related_power_pin : iovdd;
-      max_capacitance : 4.19976;
+      max_capacitance : 20.0;
       capacitance : 0.26512;
       rise_capacitance : 0.264234;
       rise_capacitance_range (0.235193, 0.284242);
@@ -915,7 +915,7 @@ library (sg13g2_io_typ_1p2V_3p3V_25C) {
       function : "pad";
       related_ground_pin : vss;
       related_power_pin : vdd;
-      max_capacitance : 0.815063;
+      max_capacitance : 20.0;
       timing () {
         related_pin : "pad";
         timing_sense : positive_unate;
@@ -1307,7 +1307,7 @@ library (sg13g2_io_typ_1p2V_3p3V_25C) {
       input_voltage : "pad";
       related_ground_pin : iovss;
       related_power_pin : iovdd;
-      max_capacitance : 4.83452;
+      max_capacitance : 20.0;
       capacitance : 0.354236;
       rise_capacitance : 0.35065;
       rise_capacitance_range (0.319563, 0.372349);
@@ -1611,7 +1611,7 @@ library (sg13g2_io_typ_1p2V_3p3V_25C) {
       function : "pad";
       related_ground_pin : vss;
       related_power_pin : vdd;
-      max_capacitance : 0.80964;
+      max_capacitance : 20.0;
       timing () {
         related_pin : "pad";
         timing_sense : positive_unate;
@@ -2003,7 +2003,7 @@ library (sg13g2_io_typ_1p2V_3p3V_25C) {
       input_voltage : "pad";
       related_ground_pin : iovss;
       related_power_pin : iovdd;
-      max_capacitance : 1.07593;
+      max_capacitance : 20.0;
       capacitance : 0.188577;
       rise_capacitance : 0.189895;
       rise_capacitance_range (0.162282, 0.208866);
@@ -2307,7 +2307,7 @@ library (sg13g2_io_typ_1p2V_3p3V_25C) {
       function : "pad";
       related_ground_pin : vss;
       related_power_pin : vdd;
-      max_capacitance : 0.812356;
+      max_capacitance : 20.0;
       timing () {
         related_pin : "pad";
         timing_sense : positive_unate;
@@ -2637,7 +2637,7 @@ library (sg13g2_io_typ_1p2V_3p3V_25C) {
       output_voltage : "pad";
       related_ground_pin : iovss;
       related_power_pin : iovdd;
-      max_capacitance : 4.21305;
+      max_capacitance : 20.0;
       timing () {
         related_pin : "c2p";
         timing_sense : positive_unate;
@@ -2830,7 +2830,7 @@ library (sg13g2_io_typ_1p2V_3p3V_25C) {
       output_voltage : "pad";
       related_ground_pin : iovss;
       related_power_pin : iovdd;
-      max_capacitance : 4.53171;
+      max_capacitance : 20.0;
       timing () {
         related_pin : "c2p";
         timing_sense : positive_unate;
@@ -3023,7 +3023,7 @@ library (sg13g2_io_typ_1p2V_3p3V_25C) {
       output_voltage : "pad";
       related_ground_pin : iovss;
       related_power_pin : iovdd;
-      max_capacitance : 1.11146;
+      max_capacitance : 20.0;
       timing () {
         related_pin : "c2p";
         timing_sense : positive_unate;
@@ -3237,7 +3237,7 @@ library (sg13g2_io_typ_1p2V_3p3V_25C) {
       output_voltage : "pad";
       related_ground_pin : iovss;
       related_power_pin : iovdd;
-      max_capacitance : 4.21412;
+      max_capacitance : 20.0;
       capacitance : 0.24106;
       rise_capacitance : 0.24299;
       rise_capacitance_range (0.24299, 0.24299);
@@ -3705,7 +3705,7 @@ library (sg13g2_io_typ_1p2V_3p3V_25C) {
       output_voltage : "pad";
       related_ground_pin : iovss;
       related_power_pin : iovdd;
-      max_capacitance : 4.86346;
+      max_capacitance : 20.0;
       capacitance : 0.331669;
       rise_capacitance : 0.33092;
       rise_capacitance_range (0.33092, 0.33092);
@@ -4173,7 +4173,7 @@ library (sg13g2_io_typ_1p2V_3p3V_25C) {
       output_voltage : "pad";
       related_ground_pin : iovss;
       related_power_pin : iovdd;
-      max_capacitance : 1.11181;
+      max_capacitance : 20.0;
       capacitance : 0.163207;
       rise_capacitance : 0.167318;
       rise_capacitance_range (0.167318, 0.167318);

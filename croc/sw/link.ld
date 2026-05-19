@@ -53,6 +53,8 @@ SECTIONS
 	*(.text.*)
 	*(.rodata)
 	*(.rodata.*)
+	*(.srodata)
+	*(.srodata.*)
 	} > SRAM :text
 
     /* Writable data (what people colloquially call RAM) */
