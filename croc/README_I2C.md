@@ -132,10 +132,12 @@ SCL_frequency = clk_frequency / (2 * (prescaler + 1))
 |------------|-----|-----------|-----|
 | Simulation (TB) | 20 MHz | 99 (0x63) | 100 kHz |
 | Simulation (TB) | 20 MHz | 39 (0x27) | 250 kHz |
-| Real silicon | 50 MHz | 249 (0xF9) | 100 kHz |
-| Real silicon | 50 MHz | 61 (0x3D) | 400 kHz |
+| Real silicon (Nominal) | 50 MHz | 249 (0xF9) | 100 kHz |
+| Real silicon (Nominal) | 50 MHz | 61 (0x3D) | 400 kHz |
+| Real silicon (STA Target) | 66.6 MHz | 332 (0x14C) | 100 kHz |
+| Real silicon (STA Target) | 66.6 MHz | 82 (0x52) | 400 kHz |
 
-**Giá trị mặc định sau reset:** `prescaler = 0x00F9` → 100 kHz tại 50 MHz clock.
+**Giá trị mặc định sau reset:** `prescaler = 0x00F9` (249) → Tương đương 100 kHz tại clock 50 MHz (hoặc ~133 kHz tại clock 66.6 MHz).
 
 ### 4.2 Chu kỳ truyền 1 byte (8 bit + 1 ACK = 9 SCL cycles)
 
@@ -254,17 +256,24 @@ gtkwave croc.fst &
 ```
 
 **Kết quả mong đợi trong terminal:**
-```
-[UART] I2C HELLO slow
-[I2C Slave] Nhận được Address: 0xa0 (Read/Write: WRITE)
-[I2C Slave] Nhận được Data: 0x48 (Ký tự: 'H')
-[I2C Slave] Nhận được Data: 0x45 (Ký tự: 'E')
-[I2C Slave] Nhận được Data: 0x4c (Ký tự: 'L')
-[I2C Slave] Nhận được Data: 0x4c (Ký tự: 'L')
-[I2C Slave] Nhận được Data: 0x4f (Ký tự: 'O')
-[UART] HELLO sent continuously: OK
-[UART] DONE
-```
+@3006950ns | [I2C Slave] Nhận được Address: 0xa0 (R/W: WRITE)
+@3060950ns | [I2C Slave] Nhận được Data: 0x47 (Ký tự: 'G')
+@3114950ns | [I2C Slave] Nhận được Data: 0x52 (Ký tự: 'R')
+@3168950ns | [I2C Slave] Nhận được Data: 0x4f (Ký tự: 'O')
+@3222950ns | [I2C Slave] Nhận được Data: 0x55 (Ký tự: 'U')
+@3276950ns | [I2C Slave] Nhận được Data: 0x50 (Ký tự: 'P')
+@3330950ns | [I2C Slave] Nhận được Data: 0x31 (Ký tự: '1')
+@3384950ns | [I2C Slave] Nhận được Data: 0x32 (Ký tự: '2')
+@5654950ns | [I2C Slave] Nhận được Address: 0xa1 (R/W:  READ)
+@5708950ns | [I2C Slave] TX OK:   sent 'h' (0x68) ✓
+@8468950ns | [I2C Slave] Nhận được Address: 0xa1 (R/W:  READ)
+@8522950ns | [I2C Slave] TX OK:   sent 'e' (0x65) ✓
+@11196950ns | [I2C Slave] Nhận được Address: 0xa1 (R/W:  READ)
+@11250950ns | [I2C Slave] TX OK:   sent 'l' (0x6c) ✓
+@13926950ns | [I2C Slave] Nhận được Address: 0xa1 (R/W:  READ)
+@13980950ns | [I2C Slave] TX OK:   sent 'l' (0x6c) ✓
+@16652950ns | [I2C Slave] Nhận được Address: 0xa1 (R/W:  READ)
+@16706950ns | [I2C Slave] TX OK:   sent 'o' (0x6f) ✓
 
 **Kết quả mong đợi trong GTKWave:**
 - I2C truyền ở chế độ **Continuous Write** (Multi-byte).
@@ -332,7 +341,10 @@ openroad -gui
 croc/
 ├── rtl/
 │   ├── i2c/
-│   │   ├── i2c.sv              ← I2C master (top + 3 sub-modules)
+│   │   ├── i2c_clkgen.sv       ← Bộ tạo xung SCL
+│   │   ├── i2c_ctrl.sv         ← FSM điều khiển giao thức I2C
+│   │   ├── i2c_regif.sv        ← Giao tiếp OBI và thanh ghi
+│   │   ├── i2c.sv              ← I2C master top wrapper
 │   │   └── i2c_reg_pkg.sv      ← Register package definitions
 │   ├── user_domain.sv          ← Kết nối i_i2c vào OBI demux
 │   └── croc_chip.sv            ← Kết nối pad inout với soc_i2c_* signals
@@ -342,7 +354,7 @@ croc/
 │   │   ├── inc/i2c.h           ← Register offsets, bit masks, API
 │   │   └── src/i2c.c           ← i2c_init(), i2c_disable()
 │   └── test/
-│       └── test_i2c.c          ←  gửi "HELLO" qua I2C
+│       └── test_i2c.c          ←  gửi "GROUP12" và READ DATA qua I2C
 └── openroad/
     ├── scripts/
     │   ├── 01_floorplan.tcl    ← Định nghĩa placement regions (I2C_USER_REGION)
@@ -353,9 +365,9 @@ croc/
 
 ---
 
-## 8. Ví dụ sử dụng phần mềm (Continuous Write)
+## 8. Ví dụ sử dụng phần mềm (Continuous Write & Read)
 
-Dưới đây là ví dụ code C để gửi liên tục một chuỗi ký tự ("HELLO") qua giao thức I2C bằng phương pháp kiểm tra cờ `TIP` (Transfer In Progress):
+Dưới đây là ví dụ code C để gửi liên tục một chuỗi ký tự ("GROUP12") và thực hiện lệnh Đọc (READ) qua giao thức I2C:
 
 ```c
 #include "i2c.h"
@@ -365,45 +377,69 @@ Dưới đây là ví dụ code C để gửi liên tục một chuỗi ký tự
 #define I2C_SLAVE_ADDR   0x50
 #define I2C_PRESCALE_VAL 39   // ~250kHz SCL at 20MHz clk
 
-void i2c_send_hello() {
-    // 1. Khởi tạo I2C
-    i2c_init(I2C_PRESCALE_VAL);
+static int wait_tip(void) {
+    int timeout = 200000;
+    while (!(*reg32(I2C_BASE_ADDR, I2C_STATUS_OFFSET) & I2C_STATUS_TIP)) {
+        if (--timeout == 0) return 0;
+    }
+    timeout = 200000;
+    while (*reg32(I2C_BASE_ADDR, I2C_STATUS_OFFSET) & I2C_STATUS_TIP) {
+        if (--timeout == 0) return -1;
+    }
+    return 0;
+}
 
-    // 2. Gửi byte địa chỉ slave (Lệnh START + WRITE)
-    *reg32(I2C_BASE_ADDR, I2C_TX_DATA_OFFSET) = (I2C_SLAVE_ADDR << 1) | 0;
+// Send multiple bytes as a continuous I2C transaction
+static int send_buffer(const uint8_t *data, int len) {
+    *reg32(I2C_BASE_ADDR, I2C_TX_DATA_OFFSET) = (I2C_SLAVE_ADDR << 1) | I2C_WRITE_BIT;
     *reg32(I2C_BASE_ADDR, I2C_CMD_OFFSET)     = I2C_CMD_START | I2C_CMD_WRITE;
-    while (*reg32(I2C_BASE_ADDR, I2C_STATUS_OFFSET) & I2C_STATUS_TIP) {} // Chờ gửi xong
+    wait_tip();
 
-    // 3. Gửi liên tục mảng dữ liệu (Multi-byte write)
-    const uint8_t data[] = {'H', 'E', 'L', 'L', 'O'};
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < len; i++) {
         *reg32(I2C_BASE_ADDR, I2C_TX_DATA_OFFSET) = data[i];
-        
-        if (i == 4) {
-            // Byte cuối cùng: Gửi dữ liệu kèm lệnh STOP
+        if (i == len - 1) {
             *reg32(I2C_BASE_ADDR, I2C_CMD_OFFSET) = I2C_CMD_WRITE | I2C_CMD_STOP | I2C_CMD_IACK;
         } else {
-            // Các byte giữa: Chỉ gửi lệnh WRITE tiếp tục
             *reg32(I2C_BASE_ADDR, I2C_CMD_OFFSET) = I2C_CMD_WRITE | I2C_CMD_IACK;
         }
-        
-        while (*reg32(I2C_BASE_ADDR, I2C_STATUS_OFFSET) & I2C_STATUS_TIP) {} // Chờ gửi xong
+        wait_tip();
+    }
+    return 0;
+}
+
+// Read 1 byte from slave (READ transaction)
+static int read_byte(uint8_t *rx_data) {
+    *reg32(I2C_BASE_ADDR, I2C_TX_DATA_OFFSET) = (I2C_SLAVE_ADDR << 1) | I2C_READ_BIT;
+    *reg32(I2C_BASE_ADDR, I2C_CMD_OFFSET)     = I2C_CMD_START | I2C_CMD_WRITE;
+    wait_tip();
+
+    if (*reg32(I2C_BASE_ADDR, I2C_STATUS_OFFSET) & I2C_STATUS_RXACK)
+        return -1; // NACK
+
+    *reg32(I2C_BASE_ADDR, I2C_CMD_OFFSET) = I2C_CMD_READ | I2C_CMD_ACK | I2C_CMD_STOP | I2C_CMD_IACK;
+    wait_tip();
+
+    *rx_data = (uint8_t)(*reg32(I2C_BASE_ADDR, I2C_RX_DATA_OFFSET) & 0xFF);
+    return 0;
+}
+
+void i2c_test() {
+    i2c_init(I2C_PRESCALE_VAL);
+    const uint8_t group[] = {'G', 'R', 'O', 'U', 'P', '1', '2'};
+    send_buffer(group, 7);
+
+    for (int i = 0; i < 5; i++) {
+        uint8_t rx = 0;
+        read_byte(&rx); // Test đọc từ slave
+        // In ra màn hình bằng UART:
+        // printf("READ["); printf("%x", i); printf("] from slave: '"); putchar(rx); printf("'\n");
     }
 }
 ```
 
 ---
 
-## 9. Lưu ý quan trọng
 
-> **Dummy Slave trong Testbench:** Để mô phỏng hoạt động thực tế, file `tb_croc_soc.sv` đã tích hợp sẵn một Slave giả lập. Slave này tự động lắng nghe bus I2C, phản hồi ACK ở bit thứ 9 và in ra log các ký tự nhận được. Do đó, bạn sẽ nhận được ACK (thành công) và không còn gặp lỗi NACK trong log mô phỏng.
-
-> **Open-drain model:** Module không thực sự xuất `sda_o = 1`. Thay vào đó:
-> khi `sda_oe = 0`, đường SDA được điện trở pull-up ngoài kéo lên HIGH.
-> Đây là yêu cầu bắt buộc của chuẩn I2C.
-
-> **Timing constraint:** File `constraints.sdc` đặt input/output delay cho
-> `i2c_sda_io` và `i2c_scl_io` tại 10%-30% chu kỳ clock hệ thống.
 
 ---
 
