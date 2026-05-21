@@ -1,10 +1,4 @@
-// Copyright 2024 ETH Zurich and University of Bologna.
-// Licensed under the Apache License, Version 2.0, see LICENSE for details.
-// SPDX-License-Identifier: Apache-2.0
-//
-// I2C HELLO - Slow version
-// Sends H,E,L,L,O with 1ms delay between each byte so all 11 bursts
-// are clearly separated and visible in GTKWave without zooming.
+
 
 #include "uart.h"
 #include "print.h"
@@ -75,7 +69,7 @@ int main(void) {
 
     i2c_init(I2C_PRESCALE_VAL);
 
-    static const uint8_t hello[] = {'G', 'R', 'O', 'U', 'P', '1', '2', '!'};
+    static const uint8_t hello[] = {'G', 'R', 'O', 'U', 'P', '1', '2'};
 
     int ret = send_buffer(hello, 7);
     if (ret == 0)
@@ -83,14 +77,21 @@ int main(void) {
     else
         printf("HELLO sent continuously: NACK\n");
 
-    // Test READ: đọc 3 lần để thấy i2c_tx_data thay đổi (0xA5, 0xA6, 0xA7)
-    for (int i = 0; i < 3; i++) {
+    // Test READ: đọc 5 lần để nhận chữ "hello" từ slave
+    for (int i = 0; i < 5; i++) {
         uint8_t rx = 0;
         ret = read_byte(&rx);
-        if (ret == 0)
-            printf("READ[%d] from slave: 0x%02X\n", i, rx);
-        else
-            printf("READ[%d] failed: NACK\n", i);
+        if (ret == 0) {
+            printf("READ[");
+            printf("%x", i);
+            printf("] from slave: '");
+            putchar(rx);
+            printf("' (0x%x)\n", rx);
+        } else {
+            printf("READ[");
+            printf("%x", i);
+            printf("] failed: NACK\n");
+        }
     }
 
     i2c_disable();

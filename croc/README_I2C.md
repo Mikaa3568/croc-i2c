@@ -256,24 +256,30 @@ gtkwave croc.fst &
 ```
 
 **Kết quả mong đợi trong terminal:**
-@3006950ns | [I2C Slave] Nhận được Address: 0xa0 (R/W: WRITE)
-@3060950ns | [I2C Slave] Nhận được Data: 0x47 (Ký tự: 'G')
-@3114950ns | [I2C Slave] Nhận được Data: 0x52 (Ký tự: 'R')
-@3168950ns | [I2C Slave] Nhận được Data: 0x4f (Ký tự: 'O')
-@3222950ns | [I2C Slave] Nhận được Data: 0x55 (Ký tự: 'U')
-@3276950ns | [I2C Slave] Nhận được Data: 0x50 (Ký tự: 'P')
-@3330950ns | [I2C Slave] Nhận được Data: 0x31 (Ký tự: '1')
-@3384950ns | [I2C Slave] Nhận được Data: 0x32 (Ký tự: '2')
-@5654950ns | [I2C Slave] Nhận được Address: 0xa1 (R/W:  READ)
-@5708950ns | [I2C Slave] TX OK:   sent 'h' (0x68) ✓
-@8468950ns | [I2C Slave] Nhận được Address: 0xa1 (R/W:  READ)
-@8522950ns | [I2C Slave] TX OK:   sent 'e' (0x65) ✓
-@11196950ns | [I2C Slave] Nhận được Address: 0xa1 (R/W:  READ)
-@11250950ns | [I2C Slave] TX OK:   sent 'l' (0x6c) ✓
-@13926950ns | [I2C Slave] Nhận được Address: 0xa1 (R/W:  READ)
-@13980950ns | [I2C Slave] TX OK:   sent 'l' (0x6c) ✓
-@16652950ns | [I2C Slave] Nhận được Address: 0xa1 (R/W:  READ)
-@16706950ns | [I2C Slave] TX OK:   sent 'o' (0x6f) ✓
+```
+[UART] I2C HELLO slow
+[I2C Slave] Nhận được Address: 0xa0 (R/W: WRITE)
+[I2C Slave] Nhận được Data: 0x47 (Ký tự: 'G')
+[I2C Slave] Nhận được Data: 0x52 (Ký tự: 'R')
+[I2C Slave] Nhận được Data: 0x4f (Ký tự: 'O')
+[I2C Slave] Nhận được Data: 0x55 (Ký tự: 'U')
+[I2C Slave] Nhận được Data: 0x50 (Ký tự: 'P')
+[I2C Slave] Nhận được Data: 0x31 (Ký tự: '1')
+[I2C Slave] Nhận được Data: 0x32 (Ký tự: '2')
+[I2C Slave] Nhận được Address: 0xa1 (R/W:  READ)
+[I2C Slave] TX OK:   sent 'h' (0x68) ✓
+[UART] READ[0] from slave: 'h' (0x68)
+[I2C Slave] Nhận được Address: 0xa1 (R/W:  READ)
+[I2C Slave] TX OK:   sent 'e' (0x65) ✓
+[UART] READ[1] from slave: 'e' (0x65)
+[I2C Slave] Nhận được Address: 0xa1 (R/W:  READ)
+[I2C Slave] TX OK:   sent 'l' (0x6c) ✓
+[UART] READ[2] from slave: 'l' (0x6c)
+[I2C Slave] Nhận được Address: 0xa1 (R/W:  READ)
+[I2C Slave] TX OK:   sent 'l' (0x6c) ✓
+[UART] READ[3] from slave: 'l' (0x6c)
+[UART] DONE
+```
 
 **Kết quả mong đợi trong GTKWave:**
 - I2C truyền ở chế độ **Continuous Write** (Multi-byte).

@@ -11,4 +11,7 @@ sources:
   - target: "all"
     files:
       - "i2c_reg_pkg.sv"
+      - "i2c_clkgen.sv"
+      - "i2c_ctrl.sv"
+      - "i2c_regif.sv"
       - "i2c.sv"

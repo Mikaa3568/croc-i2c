@@ -110,6 +110,9 @@
 ../rtl/obi/obi_xbar.sv
 ../rtl/apb/apb_pkg.sv
 ../rtl/i2c/i2c_reg_pkg.sv
+../rtl/i2c/i2c_clkgen.sv
+../rtl/i2c/i2c_ctrl.sv
+../rtl/i2c/i2c_regif.sv
 ../rtl/i2c/i2c.sv
 ../rtl/cve2/cve2_pkg.sv
 ../rtl/cve2/cve2_alu.sv

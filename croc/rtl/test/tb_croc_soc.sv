@@ -1,11 +1,3 @@
-// Copyright 2024 ETH Zurich and University of Bologna.
-// Solderpad Hardware License, Version 0.51, see LICENSE for details.
-// SPDX-License-Identifier: SHL-0.51
-//
-// Authors:
-// - Philippe Sauter <phsauter@iis.ee.ethz.ch>
-// - Enrico Zelioli <ezelioli@iis.ee.ethz.ch>
-
 `define TRACE_WAVE
 
 module tb_croc_soc #(
@@ -62,21 +54,10 @@ module tb_croc_soc #(
   ////////////
   //  VIP   //
   ////////////
-  // Verification IP
-  // - drives clocks and resets
-  // - provides helper tasks and functions for JTAG, namely:
-  //   - jtag_load_hex: loads a hex file into the DUT's memory
-  //   - jtag_write_reg32: write 32-bit value to DUT
-  //   - jtag_read_reg32: read 32-bit value from DUT
-  //   - jtag_halt / jtag_resume: control core execution
-  //   - jtag_wait_for_eoc: wait for end of code execution (core writes non-zero to status register)
-  // - prints UART output to console (you can also write via uart_write_byte)
-  // - internal GPIO loopback for helloworld test
-
   croc_vip #(
     .GpioCount ( GpioCount )
   ) i_vip (
-    .rst_no        ( rst_n       ),
+    .rst_no        ( rst_n        ),
     .sys_clk_o     ( sys_clk     ),
     .ref_clk_o     ( ref_clk     ),
     .jtag_tck_o    ( jtag_tck    ),
@@ -143,46 +124,57 @@ module tb_croc_soc #(
   logic i2c_started = 0;
   logic is_address_byte = 0;
   logic [7:0] i2c_rx_data;
-  logic [7:0] i2c_tx_data = 8'hA5; // Data slave gửi khi master READ
+  logic [7:0] hello_str [0:4] = '{ "h", "e", "l", "l", "o" };
+  int hello_idx = 0;
+  logic [7:0] i2c_tx_data; 
   logic is_read_mode = 0;
-  logic [7:0] i2c_tx_shift;         // Shift register: dịch trái từng bit khi gửi (giống rx_data nhưng shift-out)
-  wire  i2c_tx_bit = i2c_tx_shift[7]; // bit hiện tại đang được gửi (hiển thị trong waveform)
+  logic [7:0] i2c_tx_shift;         
+  wire  i2c_tx_bit = i2c_tx_shift[7]; 
 
   logic scl_d1 = 1, scl_d2 = 1;
   logic sda_d1 = 1, sda_d2 = 1;
   
   always @(posedge sys_clk) begin
     if (rst_n == 1'b0) begin
-      scl_d1 <= 1'b1; scl_d2 <= 1'b1;
-      sda_d1 <= 1'b1; sda_d2 <= 1'b1;
-      i2c_started <= 1'b0;
-      sda_slave_oe <= 1'b0;
-      i2c_bit_cnt <= 0;
+      scl_d1        <= 1'b1; 
+      scl_d2        <= 1'b1;
+      sda_d1        <= 1'b1; 
+      sda_d2        <= 1'b1;
+      i2c_started   <= 1'b0;
+      sda_slave_oe  <= 1'b0;
+      i2c_bit_cnt   <= 0;
+      hello_idx     <= 0;
+      is_read_mode  <= 1'b0;
+      is_address_byte <= 1'b0;
+      i2c_tx_data   <= hello_str[0]; 
     end else begin
       scl_d1 <= scl;
       scl_d2 <= scl_d1;
       sda_d1 <= sda;
       sda_d2 <= sda_d1;
       
-      // START: sda falls while scl is high
+      // START condition
       if (scl_d2 == 1'b1 && scl_d1 == 1'b1 && sda_d2 == 1'b1 && sda_d1 == 1'b0) begin
-        i2c_started <= 1'b1;
-        i2c_bit_cnt <= 0;
-        sda_slave_oe <= 1'b0;
+        i2c_started     <= 1'b1;
+        i2c_bit_cnt     <= 0;
+        sda_slave_oe    <= 1'b0;
         is_address_byte <= 1'b1;
       end
-      // STOP: sda rises while scl is high
+      // STOP condition
       else if (scl_d2 == 1'b1 && scl_d1 == 1'b1 && sda_d2 == 1'b0 && sda_d1 == 1'b1) begin
-        i2c_started <= 1'b0;
-        sda_slave_oe <= 1'b0;
+        i2c_started     <= 1'b0;
+        sda_slave_oe    <= 1'b0;
+        is_read_mode    <= 1'b0;
       end
       else if (i2c_started) begin
-        // SCL Falling edge
+        
+        // ============================================================
+        // SCL Falling Edge: Điều khiển trạng thái chân SDA (Thay đổi dữ liệu)
+        // ============================================================
         if (scl_d2 == 1'b1 && scl_d1 == 1'b0) begin
           if (i2c_bit_cnt == 9) begin
             i2c_bit_cnt <= 1;
             if (is_read_mode) begin
-              // Load toàn bộ data (sẽ shift từng bit ở SCL rising edge)
               i2c_tx_shift <= i2c_tx_data; 
               sda_slave_oe <= ~i2c_tx_data[7];
             end else begin
@@ -190,45 +182,83 @@ module tb_croc_soc #(
             end
           end else begin
             i2c_bit_cnt <= i2c_bit_cnt + 1;
-            if (i2c_bit_cnt == 8) begin
-              // ACK/NACK phase
+            
+            if (i2c_bit_cnt == 8) begin // Phase ACK/NACK (Xung nhịp thứ 9)
               if (is_address_byte) begin
-                sda_slave_oe <= 1'b1; // ACK address
-                $display("@%0t | [I2C Slave] Nhận được Address: 0x%02x (R/W: %s)",
-                         $time, i2c_rx_data, i2c_rx_data[0] ? "READ" : "WRITE");
+                // --- 1. SLAVE PHẢN HỒI ACK CHO ĐỊA CHỈ ---
+                sda_slave_oe    = 1'b1; 
                 is_address_byte <= 1'b0;
-                if (i2c_rx_data[0]) is_read_mode <= 1'b1;
-              end else if (is_read_mode) begin
-                sda_slave_oe <= 1'b0; // nhả SDA cho master ACK/NACK
-                // Kiểm tra TX: i2c_tx_shift phải = i2c_tx_data (bits tích lũy == dữ liệu gốc)
-                if (i2c_tx_shift == i2c_tx_data)
-                  $display("@%0t | [I2C Slave] TX OK:   sent 0x%02x, verified 0x%02x ✓",
-                           $time, i2c_tx_data, i2c_tx_shift);
-                else
-                  $error ("@%0t | [I2C Slave] TX FAIL: sent 0x%02x, but got 0x%02x ✗",
-                           $time, i2c_tx_data, i2c_tx_shift);
-                i2c_tx_data  <= i2c_tx_data + 1;
-                is_read_mode <= 1'b0;
-              end else begin
-                sda_slave_oe <= 1'b1; // ACK write data
-                $display("@%0t | [I2C Slave] Nhận được Data: 0x%02x (Ký tự: '%c')",
-                         $time, i2c_rx_data, i2c_rx_data);
+                
+                #0; // Đợi mạch vật lý gán xong
+                if (sda == 1'b0) begin
+                  $display("@%0t | [I2C Slave] Nhận Address: 0x%02x (R/W: %s) -> Slave phản hồi [ACK] ✓",
+                           $time, i2c_rx_data, i2c_rx_data[0] ? "READ" : "WRITE");
+                end else begin
+                  $error("@%0t | [I2C Slave] LỖI VẬT LÝ: Nhận Address: 0x%02x nhưng Bus lỗi [NACK] ✗",
+                           $time, i2c_rx_data);
+                end
+                
+                if (i2c_rx_data[0]) begin
+                  is_read_mode <= 1'b1;
+                end
+              end 
+              else if (is_read_mode) begin
+                // --- 2. MASTER PHẢN HỒI ACK/NACK KHI ĐỌC DỮ LIỆU TỪ SLAVE ---
+                sda_slave_oe <= 1'b0; // Nhả SDA để Master ép xung điều khiển
+                
+                #0; // Đợi Master dập hoặc nhả bus
+                if (i2c_tx_shift == i2c_tx_data) begin
+                  if (sda_master == 1'b0)
+                    $display("@%0t | [I2C Slave] TX OK: sent '%c' (0x%02x)", $time, i2c_tx_data, i2c_tx_data);
+                  else
+                    $display("@%0t | [I2C Slave] TX STOP: sent '%c' (0x%02x) -> Master thả nổi [NACK] ✗ (Kết thúc đọc)", $time, i2c_tx_data, i2c_tx_data);
+                end else begin
+                  $error ("@%0t | [I2C Slave] TX FAIL: sent 0x%02x, but got 0x%02x ✗", $time, i2c_tx_data, i2c_tx_shift);
+                end
+                
+                // Cấu hình tăng mảng dịch chữ "hello"
+                if (hello_idx == 4) begin
+                  hello_idx   <= 0;
+                  i2c_tx_data <= hello_str[0]; 
+                end else begin
+                  hello_idx   <= hello_idx + 1;
+                  i2c_tx_data <= hello_str[hello_idx + 1]; 
+                end
+                
+                is_read_mode <= 1'b0; 
+              end 
+              else begin
+                // --- 3. SLAVE PHẢN HỒI ACK KHI MASTER WRITE DATA (CÓ KIỂM TRA LỖI HAI CHIỀU) ---
+                sda_slave_oe = 1'b1; // Slave kích công tắc dập dây xuống 0
+                
+                #0; // Đợi 1 tick thời gian cực tiểu để bus cập nhật trạng thái thực tế
+                if (sda == 1'b0) begin
+                  $display("@%0t | [I2C Slave] Nhận Data: 0x%02x (Ký tự: '%c') -> Slave phản hồi [ACK] ✓",
+                           $time, i2c_rx_data, i2c_rx_data);
+                end else begin
+                  $error("@%0t | [I2C Slave] CẢNH BÁO LỖI: Nhận Data: 0x%02x nhưng đường Bus bị nghẽn [NACK] ✗",
+                           $time, i2c_rx_data);
+                end
               end
-            end else if (is_read_mode) begin
-              // Drive bit tiếp theo lên SDA (việc shift-in đã được làm ở rising edge)
-              sda_slave_oe  <= ~i2c_tx_shift[7];
+            end 
+            else if (is_read_mode) begin
+              sda_slave_oe <= ~i2c_tx_shift[7];
             end
           end
         end
-        // SCL Rising edge
+        
+        // ============================================================
+        // SCL Rising Edge: Chốt dữ liệu ổn định từ đường truyền
+        // ============================================================
         else if (scl_d2 == 1'b0 && scl_d1 == 1'b1) begin
           if (i2c_bit_cnt >= 1 && i2c_bit_cnt <= 8) begin
             if (!is_read_mode)
-              i2c_rx_data  <= {i2c_rx_data[6:0], sda_master}; // WRITE: master→slave
+              i2c_rx_data  <= {i2c_rx_data[6:0], sda_master}; 
             else
-              i2c_tx_shift <= {i2c_tx_shift[6:0], sda};       // READ:  slave→master (đối xứng)
+              i2c_tx_shift <= {i2c_tx_shift[6:0], sda};        
           end
         end
+        
       end
     end
   end
@@ -236,7 +266,7 @@ module tb_croc_soc #(
   logic [31:0] tb_data;
 
   initial begin
-    $timeformat(-9, 0, "ns", 12); // 1: scale (ns=-9), 2: decimals, 3: suffix, 4: print-field width
+    $timeformat(-9, 0, "ns", 12); 
 
     // wait for reset
     #ClkPeriodSys;
@@ -272,13 +302,12 @@ module tb_croc_soc #(
   ////////////////
   //  Waveform  //
   ////////////////
-  // start waveform dump at time 0, independent of stimuli
   initial begin
     `ifdef TRACE_WAVE
       `ifdef VERILATOR
         $dumpfile("croc.fst");
         $dumpvars(1, i_croc_soc);
-        $dumpvars(1, tb_croc_soc); // dump tất cả TB-level signals
+        $dumpvars(1, tb_croc_soc); 
       `else
         $dumpfile("croc.vcd");
         $dumpvars(1, i_croc_soc);
@@ -287,7 +316,6 @@ module tb_croc_soc #(
     `endif
   end
 
-  // flush waveform dump when simulation ends
   final begin
     `ifdef TRACE_WAVE
       $dumpflush;
